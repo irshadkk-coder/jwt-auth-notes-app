@@ -180,7 +180,8 @@ const accessToken=generateAccessToken(user._id)
 const refreshToken=generateRefreshToken(user._id)
 
 res.cookie("accessToken",accessToken,{
-    ...cookieOptions(15 * 60 * 1000)
+   
+  ...cookieOptions(15 * 60 * 1000)
 })
 res.cookie("refreshToken",refreshToken,{
     ...cookieOptions(7 * 24 * 60 * 60 * 1000)

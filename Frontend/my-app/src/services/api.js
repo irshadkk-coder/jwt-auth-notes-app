@@ -1,5 +1,3 @@
-// src/services/api.js
-
 import axios from "axios";
 
 const API = axios.create({
@@ -7,9 +5,13 @@ const API = axios.create({
   withCredentials: true,
 });
 
-// 🔥 Advanced refresh handling
 let isRefreshing = false;
 let failedQueue = [];
+
+// ✅ All public/auth routes — never trigger refresh or redirect
+const AUTH_ROUTES = ["/user/login", "/user/register", "/user/api/refresh"];
+const isAuthRoute = (url = "") =>
+  AUTH_ROUTES.some((route) => url.includes(route));
 
 const processQueue = (error) => {
   failedQueue.forEach((prom) => {
@@ -19,19 +21,29 @@ const processQueue = (error) => {
   failedQueue = [];
 };
 
+const redirectToLogin = () => {
+  if (window.location.pathname !== "/login") {
+    window.location.href = "/login";
+  }
+};
+
 API.interceptors.response.use(
   (res) => res,
   async (error) => {
     const originalRequest = error.config;
 
-    if (error.response?.status === 401 && !originalRequest._retry &&
-  !originalRequest.url.includes("/user/api/refresh")
+    if (
+      error.response?.status === 401 &&
+      !originalRequest._retry &&
+      !isAuthRoute(originalRequest.url)  // ✅ covers register, login, refresh
     ) {
-
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
-          failedQueue.push({ resolve, reject });
-        }).then(() => API(originalRequest));
+          failedQueue.push({
+            resolve: () => resolve(API(originalRequest)),
+            reject: (err) => reject(err),
+          });
+        });
       }
 
       originalRequest._retry = true;
@@ -39,13 +51,12 @@ API.interceptors.response.use(
 
       try {
         await API.post("/user/api/refresh");
-
         processQueue(null);
         return API(originalRequest);
 
       } catch (err) {
         processQueue(err);
-        window.location.href = "/login"; // fallback logout
+        redirectToLogin();
         return Promise.reject(err);
 
       } finally {
@@ -53,6 +64,7 @@ API.interceptors.response.use(
       }
     }
 
+    // ✅ Auth route errors just reject — component handles the message
     return Promise.reject(error);
   }
 );
