@@ -25,7 +25,7 @@ API.interceptors.response.use(
     const originalRequest = error.config;
 
     if (error.response?.status === 401 && !originalRequest._retry &&
-  !originalRequest.url.includes("/user/refresh")
+  !originalRequest.url.includes("/user/api/refresh")
     ) {
 
       if (isRefreshing) {
