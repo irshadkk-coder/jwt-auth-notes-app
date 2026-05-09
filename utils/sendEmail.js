@@ -3,6 +3,7 @@ import nodemailer from 'nodemailer'
 
 
 const sendEmail=async(options)=>{
+      console.log("📧 Sending email to:", options.to); 
    const transporter = nodemailer.createTransport({
   service: 'gmail',
   family: 4,        // ✅ only this needs to be added
@@ -19,6 +20,8 @@ const sendEmail=async(options)=>{
         subject:options.subject,
         text:options.text,
     })
+     
+  console.log("✅ Email sent successfully");
 }
 
 export default sendEmail;
