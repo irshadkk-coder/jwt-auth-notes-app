@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { verifyOTP } from "../services/authService";
+
 
 function VerifyOTP({ email, onVerified }) {
   const [otp, setOtp] = useState("");
@@ -12,7 +12,7 @@ function VerifyOTP({ email, onVerified }) {
     setError("");
 
     try {
-      setLoading(true);
+      setLoading(true);import { verifyOTP } from "../services/authService";
       const { data } = await verifyOTP(email, otp);
 
       if (data.success) {
