@@ -9,7 +9,7 @@ let isRefreshing = false;
 let failedQueue = [];
 
 // ✅ All public/auth routes — never trigger refresh or redirect
-const AUTH_ROUTES = ["/user/login", "/user/register", "/user/api/refresh"];
+const AUTH_ROUTES = ["/user/login", "/user/register", "/user/api/refresh" ,"/user/me" ];
 const isAuthRoute = (url = "") =>
   AUTH_ROUTES.some((route) => url.includes(route));
 

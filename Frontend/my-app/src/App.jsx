@@ -32,10 +32,16 @@ function App() {
   };
 
 useEffect(() => {
+  const PUBLIC_ROUTES = ["/register", "/verify", "/forgot-password", "/reset-password"];
+  const isPublic = PUBLIC_ROUTES.some(route =>
+    window.location.pathname.startsWith(route)
+  );
+
+  if (isPublic) return; // ✅ skip getMe() on public pages
+
   const checkUser = async () => {
     try {
       const { data } = await getMe();
-
       if (data.success) {
         setUser(data.user);
       }
@@ -46,7 +52,6 @@ useEffect(() => {
 
   checkUser();
 }, []);
-
   return (
     <>
       <ThemeToggle theme={theme} onToggle={toggleTheme} />
