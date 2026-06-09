@@ -1,25 +1,29 @@
-import { Resend } from "resend";
+import SibApiV3Sdk from "sib-api-v3-sdk";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const defaultClient = SibApiV3Sdk.ApiClient.instance;
+
+const apiKey = defaultClient.authentications["api-key"];
+apiKey.apiKey = process.env.BREVO_API_KEY;
+
+const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
 
 const sendEmail = async (options) => {
   try {
-
-    console.log("📧 Sending email to:", options.to);
-
-    const data = await resend.emails.send({
-      from: "onboarding@resend.dev",
-      to: options.to,
+    const sendSmtpEmail = {
+      sender: {
+        email: "irshadkk519082@gmail.com",
+        name: "NotesFlow",
+      },
+      to: [{ email: options.to }],
       subject: options.subject,
-      text: options.text,
-    });
+      textContent: options.text,
+    };
+
+    const data = await apiInstance.sendTransacEmail(sendSmtpEmail);
 
     console.log("✅ Email sent:", data);
-
   } catch (error) {
-
     console.log("❌ EMAIL ERROR:", error);
-
     throw error;
   }
 };
